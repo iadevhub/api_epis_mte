@@ -12,6 +12,8 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 @Service
 public class CaService {
@@ -19,9 +21,9 @@ public class CaService {
     private static final String FTP_HOST   = "ftp.mtps.gov.br";
     private static final String FTP_DIR    =
         "portal/fiscalizacao/seguranca-e-saude-no-trabalho/caepi";
-    private static final String FTP_FILE   = "tgg_export_caepi.txt";
+    private static final String FTP_FILE   = "tgg_export_caepi.zip";
     private static final int    FTP_PORT   = 21;
-    private static final int    TIMEOUT_MS = 60_000; // 60 segundos
+    private static final int    TIMEOUT_MS = 120_000; // 2 min — ZIP é maior
 
     // HashMap em memória — zero banco de dados
     private final Map<String, CaDTO> cache = new ConcurrentHashMap<>();
@@ -79,7 +81,7 @@ public class CaService {
         }
     }
 
-    // Download via FTPClient (commons-net) — funciona em containers
+    // Download via FTPClient + descompacta ZIP em memória
     private List<CaDTO> baixarEParsear() throws Exception {
         List<CaDTO> lista = new ArrayList<>();
 
@@ -87,63 +89,61 @@ public class CaService {
         ftp.setConnectTimeout(TIMEOUT_MS);
         ftp.setDefaultTimeout(TIMEOUT_MS);
         ftp.setDataTimeout(TIMEOUT_MS);
-        ftp.setUseEPSVwithIPv4(true); // EPSV — melhor compatibilidade em NAT/containers
+        ftp.setUseEPSVwithIPv4(true);
 
         try {
             ftp.connect(FTP_HOST, FTP_PORT);
-            System.out.println("FTP conectado. Reply: " + ftp.getReplyCode() + " " + ftp.getReplyString().trim());
+            System.out.println("FTP conectado. Reply: " + ftp.getReplyCode());
 
-            boolean loggedIn = ftp.login("anonymous", "ca-api@unomed.med.br");
-            System.out.println("FTP login: " + loggedIn + " | Reply: " + ftp.getReplyCode());
+            ftp.login("anonymous", "ca-api@unomed.med.br");
+            System.out.println("FTP login OK. Reply: " + ftp.getReplyCode());
 
             ftp.enterLocalPassiveMode();
-            ftp.setFileType(FTP.BINARY_FILE_TYPE); // binário evita corrupção de bytes
+            ftp.setFileType(FTP.BINARY_FILE_TYPE);
 
             boolean changed = ftp.changeWorkingDirectory(FTP_DIR);
-            System.out.println("CWD " + FTP_DIR + " -> " + changed + " | Reply: " + ftp.getReplyCode());
-
             if (!changed) {
                 throw new IOException("Nao foi possivel navegar para o diretorio: "
-                    + FTP_DIR + " | Codigo: " + ftp.getReplyCode() + " " + ftp.getReplyString().trim());
+                    + FTP_DIR + " | Codigo: " + ftp.getReplyCode());
             }
 
-            // Lista arquivos do diretório para diagnóstico
-            String[] arquivos = ftp.listNames();
-            if (arquivos != null) {
-                System.out.println("Arquivos no diretorio (" + arquivos.length + "):");
-                for (String a : arquivos) System.out.println("  -> " + a);
-            } else {
-                System.out.println("listNames() retornou null. Reply: " + ftp.getReplyCode());
+            System.out.println("Baixando: " + FTP_FILE);
+            InputStream ftpStream = ftp.retrieveFileStream(FTP_FILE);
+
+            if (ftpStream == null) {
+                throw new IOException("FTP recusou o arquivo. Codigo: "
+                    + ftp.getReplyCode() + " " + ftp.getReplyString().trim());
             }
 
-            System.out.println("Solicitando arquivo: " + FTP_FILE);
-            InputStream is = ftp.retrieveFileStream(FTP_FILE);
-            System.out.println("FTP retrieveFileStream reply: " + ftp.getReplyCode() + " " + ftp.getReplyString().trim());
+            // Descompacta o ZIP em memória e parseia o TXT interno
+            try (ZipInputStream zip = new ZipInputStream(ftpStream)) {
+                ZipEntry entry;
+                while ((entry = zip.getNextEntry()) != null) {
+                    System.out.println("Entrada ZIP: " + entry.getName());
 
-            if (is == null) {
-                throw new IOException("FTP recusou o download do arquivo. Codigo: "
-                    + ftp.getReplyCode() + " | " + ftp.getReplyString().trim());
-            }
+                    if (entry.getName().toLowerCase().endsWith(".txt")) {
+                        BufferedReader reader = new BufferedReader(
+                            new InputStreamReader(zip, Charset.forName("ISO-8859-1")));
 
-            try (BufferedReader reader = new BufferedReader(
-                     new InputStreamReader(is, Charset.forName("ISO-8859-1")))) {
+                        String linha;
+                        boolean primeiraLinha = true;
 
-                String linha;
-                boolean primeiraLinha = true;
+                        while ((linha = reader.readLine()) != null) {
+                            if (primeiraLinha) {
+                                primeiraLinha = false;
+                                System.out.println("Cabecalho: "
+                                    + linha.substring(0, Math.min(linha.length(), 120)));
+                                continue;
+                            }
+                            if (linha.isBlank()) continue;
+                            CaDTO ca = parsearLinha(linha);
+                            if (ca != null) lista.add(ca);
+                        }
 
-                while ((linha = reader.readLine()) != null) {
-
-                    if (primeiraLinha) {
-                        primeiraLinha = false;
-                        System.out.println("Cabecalho: "
-                            + linha.substring(0, Math.min(linha.length(), 120)));
-                        continue;
+                        zip.closeEntry();
+                        break; // só um TXT dentro do ZIP
                     }
-
-                    if (linha.isBlank()) continue;
-
-                    CaDTO ca = parsearLinha(linha);
-                    if (ca != null) lista.add(ca);
+                    zip.closeEntry();
                 }
             }
 
@@ -166,8 +166,7 @@ public class CaService {
 
             if (c.length < 5) return null;
 
-            // Posições do tgg_export_caepi.txt
-            // Ajuste se o gov alterar o layout (ver logs "Cabecalho:")
+            // Posições do tgg_export_caepi.txt — ajuste se mudar o layout
             String numeroCa     = limpar(c.length > 0 ? c[0] : "");
             String descricao    = limpar(c.length > 1 ? c[1] : "");
             String tipoEpi      = limpar(c.length > 2 ? c[2] : "");
@@ -183,7 +182,7 @@ public class CaService {
                              dataValidade, tipoEpi, nrAprovacao, restricoes);
 
         } catch (Exception e) {
-            return null; // linha malformada — ignora
+            return null;
         }
     }
 
@@ -207,11 +206,11 @@ public class CaService {
 
     public Map<String, Object> getStatus() {
         Map<String, Object> status = new LinkedHashMap<>();
-        status.put("status",              "online");
-        status.put("totalRegistros",      totalRegistros);
-        status.put("ultimaAtualizacao",   ultimaAtualizacao);
-        status.put("statusUltimaCarga",   statusUltimaCarga);
-        status.put("fonte",               "ftp://" + FTP_HOST + "/" + FTP_DIR + "/" + FTP_FILE);
+        status.put("status",                "online");
+        status.put("totalRegistros",        totalRegistros);
+        status.put("ultimaAtualizacao",     ultimaAtualizacao);
+        status.put("statusUltimaCarga",     statusUltimaCarga);
+        status.put("fonte",                 "ftp://" + FTP_HOST + "/" + FTP_DIR + "/" + FTP_FILE);
         status.put("atualizacaoAutomatica", "Todo dia as 20h15");
         return status;
     }
