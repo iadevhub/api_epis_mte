@@ -86,15 +86,28 @@ public class CaService {
         ftp.setConnectTimeout(TIMEOUT_MS);
         ftp.setDefaultTimeout(TIMEOUT_MS);
         ftp.setDataTimeout(TIMEOUT_MS);
+        ftp.setUseEPSVwithIPv4(true); // EPSV — melhor compatibilidade em NAT/containers
 
         try {
             ftp.connect(FTP_HOST, FTP_PORT);
-            ftp.login("anonymous", "ca-api@unomed.med.br");
-            ftp.setFileType(FTP.ASCII_FILE_TYPE);
-            ftp.enterLocalPassiveMode(); // PASV — essencial em containers
+            System.out.println("FTP conectado. Reply: " + ftp.getReplyCode() + " " + ftp.getReplyString().trim());
 
-            try (InputStream is = ftp.retrieveFileStream(FTP_PATH);
-                 BufferedReader reader = new BufferedReader(
+            boolean loggedIn = ftp.login("anonymous", "ca-api@unomed.med.br");
+            System.out.println("FTP login: " + loggedIn + " | Reply: " + ftp.getReplyCode());
+
+            ftp.enterLocalPassiveMode();
+            ftp.setFileType(FTP.BINARY_FILE_TYPE); // binário evita corrupção de bytes
+
+            System.out.println("Solicitando arquivo: " + FTP_PATH);
+            InputStream is = ftp.retrieveFileStream(FTP_PATH);
+            System.out.println("FTP retrieveFileStream reply: " + ftp.getReplyCode() + " " + ftp.getReplyString().trim());
+
+            if (is == null) {
+                throw new IOException("FTP recusou o download do arquivo. Codigo: "
+                    + ftp.getReplyCode() + " | " + ftp.getReplyString().trim());
+            }
+
+            try (BufferedReader reader = new BufferedReader(
                      new InputStreamReader(is, Charset.forName("ISO-8859-1")))) {
 
                 String linha;
