@@ -17,8 +17,9 @@ import java.util.concurrent.ConcurrentHashMap;
 public class CaService {
 
     private static final String FTP_HOST   = "ftp.mtps.gov.br";
-    private static final String FTP_PATH   =
-        "/portal/fiscalizacao/seguranca-e-saude-no-trabalho/caepi/tgg_export_caepi.txt";
+    private static final String FTP_DIR    =
+        "portal/fiscalizacao/seguranca-e-saude-no-trabalho/caepi";
+    private static final String FTP_FILE   = "tgg_export_caepi.txt";
     private static final int    FTP_PORT   = 21;
     private static final int    TIMEOUT_MS = 60_000; // 60 segundos
 
@@ -98,8 +99,16 @@ public class CaService {
             ftp.enterLocalPassiveMode();
             ftp.setFileType(FTP.BINARY_FILE_TYPE); // binário evita corrupção de bytes
 
-            System.out.println("Solicitando arquivo: " + FTP_PATH);
-            InputStream is = ftp.retrieveFileStream(FTP_PATH);
+            boolean changed = ftp.changeWorkingDirectory(FTP_DIR);
+            System.out.println("CWD " + FTP_DIR + " -> " + changed + " | Reply: " + ftp.getReplyCode());
+
+            if (!changed) {
+                throw new IOException("Nao foi possivel navegar para o diretorio: "
+                    + FTP_DIR + " | Codigo: " + ftp.getReplyCode() + " " + ftp.getReplyString().trim());
+            }
+
+            System.out.println("Solicitando arquivo: " + FTP_FILE);
+            InputStream is = ftp.retrieveFileStream(FTP_FILE);
             System.out.println("FTP retrieveFileStream reply: " + ftp.getReplyCode() + " " + ftp.getReplyString().trim());
 
             if (is == null) {
@@ -193,7 +202,7 @@ public class CaService {
         status.put("totalRegistros",      totalRegistros);
         status.put("ultimaAtualizacao",   ultimaAtualizacao);
         status.put("statusUltimaCarga",   statusUltimaCarga);
-        status.put("fonte",               FTP_HOST + FTP_PATH);
+        status.put("fonte",               "ftp://" + FTP_HOST + "/" + FTP_DIR + "/" + FTP_FILE);
         status.put("atualizacaoAutomatica", "Todo dia as 20h15");
         return status;
     }
