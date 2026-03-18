@@ -127,13 +127,28 @@ public class CaService {
 
                         String linha;
                         boolean primeiraLinha = true;
+                        boolean segundaLinha  = false;
 
                         while ((linha = reader.readLine()) != null) {
                             if (primeiraLinha) {
                                 primeiraLinha = false;
-                                System.out.println("Cabecalho: "
-                                    + linha.substring(0, Math.min(linha.length(), 120)));
+                                segundaLinha  = true;
+                                // Log completo do cabeçalho — colunas separadas por |
+                                String[] cols = linha.split("\\|", -1);
+                                System.out.println("CABECALHO (" + cols.length + " colunas):");
+                                for (int i = 0; i < cols.length; i++) {
+                                    System.out.println("  col[" + i + "] = " + cols[i].trim());
+                                }
                                 continue;
+                            }
+                            if (segundaLinha && !linha.isBlank()) {
+                                segundaLinha = false;
+                                // Log completo da primeira linha de dados
+                                String[] cols = linha.split("\\|", -1);
+                                System.out.println("PRIMEIRA LINHA (" + cols.length + " campos):");
+                                for (int i = 0; i < cols.length; i++) {
+                                    System.out.println("  [" + i + "] = " + cols[i].trim());
+                                }
                             }
                             if (linha.isBlank()) continue;
                             CaDTO ca = parsearLinha(linha);
