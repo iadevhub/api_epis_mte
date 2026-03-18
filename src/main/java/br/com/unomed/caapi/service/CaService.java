@@ -107,6 +107,15 @@ public class CaService {
                     + FTP_DIR + " | Codigo: " + ftp.getReplyCode() + " " + ftp.getReplyString().trim());
             }
 
+            // Lista arquivos do diretório para diagnóstico
+            String[] arquivos = ftp.listNames();
+            if (arquivos != null) {
+                System.out.println("Arquivos no diretorio (" + arquivos.length + "):");
+                for (String a : arquivos) System.out.println("  -> " + a);
+            } else {
+                System.out.println("listNames() retornou null. Reply: " + ftp.getReplyCode());
+            }
+
             System.out.println("Solicitando arquivo: " + FTP_FILE);
             InputStream is = ftp.retrieveFileStream(FTP_FILE);
             System.out.println("FTP retrieveFileStream reply: " + ftp.getReplyCode() + " " + ftp.getReplyString().trim());
