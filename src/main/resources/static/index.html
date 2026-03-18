@@ -396,7 +396,7 @@
           <div>
             <div class="ca-numero ${cls}">CA ${ca.numeroCa}</div>
             ${ca.tipoEpi ? `<div class="ca-tipo">${ca.tipoEpi}</div>` : ''}
-            ${ca.dataValidade ? `<div class="ca-validade" style="margin-top:6px;font-size:13px;font-weight:600;color:${cls==='vencido'?'#C62828':cls==='cancelado'?'#757575':'#2E7D32'};">Validade: ${formatData(ca.dataValidade)}</div>` : ''}
+            ${ca.dataValidade ? `<div class="ca-validade" style="display:inline-block;margin-top:8px;padding:4px 12px;border-radius:6px;font-size:13px;font-weight:700;color:#fff;background:${cls==='vencido'?'#C62828':cls==='cancelado'?'#757575':'#2E7D32'};">Validade: ${formatData(ca.dataValidade)}</div>` : ''}
           </div>
           <span class="status-badge ${cls}">${ca.status || 'SEM STATUS'}</span>
         </div>
