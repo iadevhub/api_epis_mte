@@ -225,16 +225,6 @@
     .ca-fonte {
       font-size: 11px; color: #9aa0ac;
     }
-    .btn-laudo {
-      display: inline-flex; align-items: center; gap: 6px;
-      background: #1565C0; color: #fff;
-      padding: 9px 18px; border-radius: 8px;
-      font-size: 13px; font-weight: 600;
-      text-decoration: none;
-      transition: background .2s;
-    }
-    .btn-laudo:hover { background: #0D47A1; }
-
     /* ── ERRO ── */
     .card-erro {
       background: #fff;
@@ -462,7 +452,64 @@
             <div class="dado-valor">${ca.referencias}</div>
           </div>` : ''}
 
+          ${ca.cor ? `
+          <div class="dado-item" style="grid-column: 1 / -1;">
+            <div class="dado-label">Cor</div>
+            <div class="dado-valor">${ca.cor}</div>
+          </div>` : ''}
+
         </div>
+
+        <!-- APROVADO PARA -->
+        ${ca.aprovadoPara ? `
+        <div class="ca-descricao-section">
+          <div class="section-label">Aprovado para</div>
+          <div class="ca-descricao-texto">${ca.aprovadoPara}</div>
+        </div>` : ''}
+
+        <!-- OBSERVAÇÃO -->
+        ${ca.observacao ? `
+        <div class="ca-descricao-section">
+          <div class="section-label">Observação</div>
+          <div class="ca-descricao-texto">${ca.observacao}</div>
+        </div>` : ''}
+
+        <!-- RESTRIÇÃO DO LAUDO -->
+        ${ca.restricaoLaudo ? `
+        <div class="ca-descricao-section">
+          <div class="section-label">Restrição do laudo</div>
+          <div class="ca-descricao-texto">${ca.restricaoLaudo}</div>
+        </div>` : ''}
+
+        <!-- DADOS DO LAUDO -->
+        ${ca.nrLaudo || ca.laboratorio || ca.norma ? `
+        <div class="ca-dados-section" style="background:#f8f9fb; border-top: 1px solid #f0f2f5;">
+
+          ${ca.nrLaudo ? `
+          <div class="dado-item" style="grid-column: 1 / -1;">
+            <div class="dado-label">N° do Laudo</div>
+            <div class="dado-valor">${ca.nrLaudo}</div>
+          </div>` : ''}
+
+          ${ca.laboratorio ? `
+          <div class="dado-item" style="grid-column: 1 / -1;">
+            <div class="dado-label">Laboratório</div>
+            <div class="dado-valor">${ca.laboratorio}</div>
+          </div>` : ''}
+
+          ${ca.cnpjLaboratorio ? `
+          <div class="dado-item">
+            <div class="dado-label">CNPJ do Laboratório</div>
+            <div class="dado-valor cnpj">${formatCnpj(ca.cnpjLaboratorio)}</div>
+          </div>` : ''}
+
+          ${ca.norma ? `
+          <div class="dado-item">
+            <div class="dado-label">Norma</div>
+            <div class="dado-valor">${ca.norma}</div>
+          </div>` : ''}
+
+        </div>` : ''}
 
         <!-- ALERTAS -->
         ${alertaVencido}
@@ -473,13 +520,6 @@
           <span class="ca-fonte">
             Fonte: Ministério do Trabalho e Emprego — Base CAEPI
           </span>
-          <a
-            class="btn-laudo"
-            href="https://consultaca.com/${ca.numeroCa}"
-            target="_blank"
-          >
-            Ver laudo completo ↗
-          </a>
         </div>
 
       </div>`;

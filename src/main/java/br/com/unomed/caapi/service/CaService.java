@@ -159,34 +159,46 @@ public class CaService {
         return lista;
     }
 
-    // Parse de cada linha do arquivo TXT (separado por |)
-    // Layout real do tgg_export_caepi.txt:
-    // [0] NR_CA  [1] DATA_VALIDADE    [2] SITUACAO       [3] NUP
-    // [4] CNPJ   [5] RAZAO_SOCIAL     [6] ABRANGENCIA    [7] TIPO_EPI
-    // [8] DESCRICAO_PRODUTO           [9] MARCACAO        [10] REFERENCIAS
+    // Layout do tgg_export_caepi.txt — 19 colunas (confirmado pelo projeto API_BaseCAEPI):
+    // [0]  #NRRegistroCA     [1]  DataValidade         [2]  Situacao
+    // [3]  NRProcesso        [4]  CNPJ                 [5]  RazaoSocial
+    // [6]  Natureza          [7]  NomeEquipamento      [8]  DescricaoEquipamento
+    // [9]  MarcaCA           [10] Referencia            [11] Cor
+    // [12] AprovadoParaLaudo [13] RestricaoLaudo        [14] ObservacaoAnaliseLaudo
+    // [15] CNPJLaboratorio   [16] RazaoSocialLaboratorio[17] NRLaudo  [18] Norma
     private CaDTO parsearLinha(String linha) {
         try {
             String[] c = linha.split("\\|", -1);
 
             if (c.length < 6) return null;
 
-            String numeroCa       = limpar(c[0]);
-            String dataValidade   = limpar(c.length > 1  ? c[1]  : ""); // data de validade
-            String status         = limpar(c[2]); // VÁLIDO / VENCIDO / CANCELADO
-            String nup            = limpar(c.length > 3  ? c[3]  : ""); // N° Processo
-            String cnpj           = limpar(c[4]);
-            String fabricante     = limpar(c[5]);
-            String abrangencia    = limpar(c.length > 6  ? c[6]  : ""); // Nacional / Estadual
-            String tipoEpi        = limpar(c.length > 7  ? c[7]  : "");
-            String descricao      = limpar(c.length > 8  ? c[8]  : "");
-            String marcacao       = limpar(c.length > 9  ? c[9]  : ""); // onde o CA é impresso
-            String referencias    = limpar(c.length > 10 ? c[10] : ""); // modelo/referências
+            String numeroCa          = limpar(c[0]);
+            String dataValidade      = limpar(c.length > 1  ? c[1]  : "");
+            String status            = limpar(c[2]);
+            String nup               = limpar(c.length > 3  ? c[3]  : "");
+            String cnpj              = limpar(c[4]);
+            String fabricante        = limpar(c[5]);
+            String abrangencia       = limpar(c.length > 6  ? c[6]  : "");
+            String tipoEpi           = limpar(c.length > 7  ? c[7]  : "");
+            String descricao         = limpar(c.length > 8  ? c[8]  : "");
+            String marcacao          = limpar(c.length > 9  ? c[9]  : "");
+            String referencias       = limpar(c.length > 10 ? c[10] : "");
+            String cor               = limpar(c.length > 11 ? c[11] : "");
+            String aprovadoPara      = limpar(c.length > 12 ? c[12] : "");
+            String restricaoLaudo    = limpar(c.length > 13 ? c[13] : "");
+            String observacao        = limpar(c.length > 14 ? c[14] : "");
+            String cnpjLaboratorio   = limpar(c.length > 15 ? c[15] : "");
+            String laboratorio       = limpar(c.length > 16 ? c[16] : "");
+            String nrLaudo           = limpar(c.length > 17 ? c[17] : "");
+            String norma             = limpar(c.length > 18 ? c[18] : "");
 
             if (numeroCa.isBlank()) return null;
 
-            return new CaDTO(numeroCa, descricao, fabricante, cnpj,
-                             dataValidade, status, nup,
-                             abrangencia, tipoEpi, marcacao, referencias);
+            return new CaDTO(numeroCa, dataValidade, status, nup,
+                             cnpj, fabricante, abrangencia, tipoEpi, descricao,
+                             marcacao, referencias, cor, aprovadoPara,
+                             restricaoLaudo, observacao, cnpjLaboratorio,
+                             laboratorio, nrLaudo, norma);
 
         } catch (Exception e) {
             return null;
