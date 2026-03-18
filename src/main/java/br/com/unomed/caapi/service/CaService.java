@@ -123,7 +123,7 @@ public class CaService {
 
                     if (entry.getName().toLowerCase().endsWith(".txt")) {
                         BufferedReader reader = new BufferedReader(
-                            new InputStreamReader(zip, Charset.forName("ISO-8859-1")));
+                            new InputStreamReader(zip, Charset.forName("UTF-8")));
 
                         String linha;
                         boolean primeiraLinha = true;
