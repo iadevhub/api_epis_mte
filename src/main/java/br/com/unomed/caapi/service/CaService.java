@@ -127,28 +127,13 @@ public class CaService {
 
                         String linha;
                         boolean primeiraLinha = true;
-                        boolean segundaLinha  = false;
 
                         while ((linha = reader.readLine()) != null) {
                             if (primeiraLinha) {
                                 primeiraLinha = false;
-                                segundaLinha  = true;
-                                // Log completo do cabeçalho — colunas separadas por |
                                 String[] cols = linha.split("\\|", -1);
-                                System.out.println("CABECALHO (" + cols.length + " colunas):");
-                                for (int i = 0; i < cols.length; i++) {
-                                    System.out.println("  col[" + i + "] = " + cols[i].trim());
-                                }
+                                System.out.println("Cabecalho (" + cols.length + " colunas): " + linha.substring(0, Math.min(linha.length(), 200)));
                                 continue;
-                            }
-                            if (segundaLinha && !linha.isBlank()) {
-                                segundaLinha = false;
-                                // Log completo da primeira linha de dados
-                                String[] cols = linha.split("\\|", -1);
-                                System.out.println("PRIMEIRA LINHA (" + cols.length + " campos):");
-                                for (int i = 0; i < cols.length; i++) {
-                                    System.out.println("  [" + i + "] = " + cols[i].trim());
-                                }
                             }
                             if (linha.isBlank()) continue;
                             CaDTO ca = parsearLinha(linha);
@@ -175,26 +160,30 @@ public class CaService {
     }
 
     // Parse de cada linha do arquivo TXT (separado por |)
+    // Layout real do tgg_export_caepi.txt (verificado nos logs):
+    // [0] NR_CA  [1] DATA_PUBLICACAO  [2] SITUACAO  [3] NUP
+    // [4] CNPJ   [5] RAZAO_SOCIAL     [6] ABRANGENCIA  [7] TIPO_EPI
+    // [8] DESCRICAO_PRODUTO  [9] DATA_VALIDADE  [10] RESTRICOES
     private CaDTO parsearLinha(String linha) {
         try {
             String[] c = linha.split("\\|", -1);
 
-            if (c.length < 5) return null;
+            if (c.length < 6) return null;
 
-            // Posições do tgg_export_caepi.txt — ajuste se mudar o layout
-            String numeroCa     = limpar(c.length > 0 ? c[0] : "");
-            String descricao    = limpar(c.length > 1 ? c[1] : "");
-            String tipoEpi      = limpar(c.length > 2 ? c[2] : "");
-            String fabricante   = limpar(c.length > 3 ? c[3] : "");
-            String cnpj         = limpar(c.length > 4 ? c[4] : "");
-            String dataValidade = limpar(c.length > 5 ? c[5] : "");
-            String nrAprovacao  = limpar(c.length > 6 ? c[6] : "");
-            String restricoes   = limpar(c.length > 7 ? c[7] : "");
+            String numeroCa     = limpar(c[0]);
+            String status       = limpar(c[2]); // VÁLIDO / VENCIDO / CANCELADO
+            String cnpj         = limpar(c[4]);
+            String fabricante   = limpar(c[5]);
+            String nrAprovacao  = limpar(c.length > 6  ? c[6]  : "");
+            String tipoEpi      = limpar(c.length > 7  ? c[7]  : "");
+            String descricao    = limpar(c.length > 8  ? c[8]  : "");
+            String dataValidade = limpar(c.length > 9  ? c[9]  : "");
+            String restricoes   = limpar(c.length > 10 ? c[10] : "");
 
             if (numeroCa.isBlank()) return null;
 
             return new CaDTO(numeroCa, descricao, fabricante, cnpj,
-                             dataValidade, tipoEpi, nrAprovacao, restricoes);
+                             dataValidade, status, tipoEpi, nrAprovacao, restricoes);
 
         } catch (Exception e) {
             return null;
@@ -213,8 +202,10 @@ public class CaService {
     public List<CaDTO> buscarPorNome(String nome) {
         String busca = nome.toLowerCase().trim();
         return cache.values().stream()
-            .filter(ca -> ca.getDescricao() != null
-                       && ca.getDescricao().toLowerCase().contains(busca))
+            .filter(ca ->
+                (ca.getDescricao() != null && ca.getDescricao().toLowerCase().contains(busca))
+             || (ca.getTipoEpi()   != null && ca.getTipoEpi().toLowerCase().contains(busca))
+             || (ca.getFabricante()!= null && ca.getFabricante().toLowerCase().contains(busca)))
             .limit(50)
             .toList();
     }
