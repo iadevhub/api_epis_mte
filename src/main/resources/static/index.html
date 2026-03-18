@@ -9,260 +9,294 @@
 
     body {
       font-family: 'Segoe UI', Arial, sans-serif;
-      background: #f8f9fa;
-      color: #202124;
+      background: #f0f2f5;
+      color: #1a1a2e;
       min-height: 100vh;
       display: flex;
       flex-direction: column;
     }
 
-    /* HEADER */
+    /* ── HEADER ── */
     header {
-      background: #1565C0;
-      padding: 10px 24px;
+      background: linear-gradient(135deg, #1565C0 0%, #0D47A1 100%);
+      padding: 14px 32px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+    }
+    .logo-icon {
+      width: 38px; height: 38px;
+      background: #fff;
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px; font-weight: 900; color: #1565C0;
+      flex-shrink: 0;
+    }
+    .logo-text { font-size: 20px; font-weight: 700; color: #fff; }
+    .logo-sub  { font-size: 11px; color: #90CAF9; margin-top: 1px; }
+    header nav { margin-left: auto; display: flex; gap: 20px; }
+    header nav a {
+      color: #90CAF9; font-size: 13px; text-decoration: none;
+      transition: color .2s;
+    }
+    header nav a:hover { color: #fff; }
+
+    /* ── SEARCH STRIP ── */
+    .search-strip {
+      background: #fff;
+      border-bottom: 1px solid #e0e0e0;
+      padding: 20px 32px;
       display: flex;
       align-items: center;
       gap: 12px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
     }
-    header .logo-text {
-      font-size: 22px;
-      font-weight: 700;
-      color: #fff;
-      letter-spacing: 1px;
+    .search-wrap {
+      flex: 1; max-width: 600px;
+      position: relative;
     }
-    header .logo-sub {
-      font-size: 11px;
-      color: #90CAF9;
-      margin-top: 2px;
+    .search-wrap input {
+      width: 100%;
+      padding: 13px 50px 13px 18px;
+      font-size: 17px;
+      border: 2px solid #dde1e7;
+      border-radius: 10px;
+      outline: none;
+      background: #f8f9fb;
+      color: #1a1a2e;
+      transition: border .2s, box-shadow .2s;
     }
-    header .logo-badge {
-      background: #FF8F00;
-      color: #fff;
-      font-size: 10px;
-      font-weight: 700;
-      padding: 2px 8px;
-      border-radius: 12px;
-      margin-left: auto;
+    .search-wrap input:focus {
+      border-color: #1565C0;
+      background: #fff;
+      box-shadow: 0 0 0 3px rgba(21,101,192,.12);
     }
+    .search-wrap input::placeholder { color: #9aa0ac; }
+    .btn-search {
+      position: absolute; right: 10px; top: 50%;
+      transform: translateY(-50%);
+      background: #1565C0; border: none; cursor: pointer;
+      width: 34px; height: 34px; border-radius: 7px;
+      display: flex; align-items: center; justify-content: center;
+      transition: background .2s;
+    }
+    .btn-search:hover { background: #0D47A1; }
+    .btn-search svg { fill: #fff; }
+    .search-hint { font-size: 12px; color: #9aa0ac; white-space: nowrap; }
 
-    /* MAIN */
+    /* ── MAIN ── */
     main {
       flex: 1;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 60px 20px 40px;
-    }
-
-    .hero {
-      text-align: center;
-      margin-bottom: 40px;
-    }
-    .hero h1 {
-      font-size: 42px;
-      font-weight: 300;
-      color: #1565C0;
-      letter-spacing: -1px;
-    }
-    .hero h1 span { color: #FF8F00; font-weight: 700; }
-    .hero p {
-      color: #5f6368;
-      font-size: 14px;
-      margin-top: 8px;
-    }
-
-    /* SEARCH BOX */
-    .search-box {
+      padding: 28px 32px;
+      max-width: 1100px;
       width: 100%;
-      max-width: 600px;
-      position: relative;
-      margin-bottom: 12px;
+      margin: 0 auto;
     }
-    .search-box input {
-      width: 100%;
-      padding: 16px 56px 16px 20px;
-      font-size: 18px;
-      border: 2px solid #dfe1e5;
-      border-radius: 28px;
-      outline: none;
-      background: #fff;
-      box-shadow: 0 1px 6px rgba(32,33,36,.08);
-      transition: border 0.2s, box-shadow 0.2s;
-      color: #202124;
-    }
-    .search-box input:focus {
-      border-color: #1565C0;
-      box-shadow: 0 1px 6px rgba(21,101,192,.3);
-    }
-    .search-box input::placeholder { color: #9aa0a6; }
-    .search-box button {
-      position: absolute;
-      right: 14px;
-      top: 50%;
-      transform: translateY(-50%);
-      background: none;
-      border: none;
-      cursor: pointer;
-      padding: 6px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      transition: background 0.2s;
-    }
-    .search-box button:hover { background: #f1f3f4; }
-    .search-box button svg { fill: #1565C0; }
 
-    .search-hint {
-      font-size: 12px;
-      color: #9aa0a6;
+    /* ── ESTADO INICIAL ── */
+    .empty-state {
       text-align: center;
-      margin-bottom: 32px;
+      padding: 60px 20px;
     }
+    .empty-state .icon { font-size: 56px; margin-bottom: 16px; }
+    .empty-state h2 { font-size: 22px; color: #1565C0; margin-bottom: 8px; }
+    .empty-state p  { color: #6b7280; font-size: 14px; line-height: 1.6; }
 
-    /* RESULTADO */
-    #resultado { width: 100%; max-width: 600px; }
-
+    /* ── LOADING ── */
     .loading {
-      text-align: center;
-      color: #5f6368;
-      padding: 24px;
-      font-size: 14px;
+      display: flex; align-items: center; gap: 12px;
+      padding: 24px; color: #6b7280; font-size: 14px;
     }
-    .loading::after {
-      content: '';
-      display: inline-block;
-      width: 16px; height: 16px;
-      border: 2px solid #1565C0;
-      border-top-color: transparent;
+    .spinner {
+      width: 20px; height: 20px;
+      border: 2px solid #dde1e7;
+      border-top-color: #1565C0;
       border-radius: 50%;
-      animation: spin 0.8s linear infinite;
-      margin-left: 8px;
-      vertical-align: middle;
+      animation: spin .7s linear infinite;
     }
     @keyframes spin { to { transform: rotate(360deg); } }
 
-    .card {
+    /* ── CARD DE RESULTADO ── */
+    .ca-card {
       background: #fff;
-      border-radius: 12px;
-      padding: 28px;
-      box-shadow: 0 2px 8px rgba(32,33,36,.12);
-      border-top: 4px solid #1565C0;
+      border-radius: 14px;
+      overflow: hidden;
+      box-shadow: 0 2px 12px rgba(0,0,0,.08);
     }
-    .card.vencido  { border-top-color: #C62828; }
-    .card.cancelado { border-top-color: #616161; }
 
-    .card-header {
+    /* Faixa de status no topo */
+    .ca-card-top {
+      padding: 20px 28px 16px;
+      border-bottom: 1px solid #f0f2f5;
       display: flex;
       align-items: flex-start;
       justify-content: space-between;
-      margin-bottom: 20px;
-      gap: 12px;
-    }
-    .ca-numero {
-      font-size: 28px;
-      font-weight: 700;
-      color: #1565C0;
-    }
-    .ca-numero.vencido  { color: #C62828; }
-    .ca-numero.cancelado { color: #616161; }
-
-    .badge {
-      padding: 6px 16px;
-      border-radius: 20px;
-      font-size: 13px;
-      font-weight: 700;
-      white-space: nowrap;
-      flex-shrink: 0;
-    }
-    .badge.valido    { background: #E8F5E9; color: #2E7D32; border: 1px solid #A5D6A7; }
-    .badge.vencido   { background: #FFEBEE; color: #C62828; border: 1px solid #EF9A9A; }
-    .badge.cancelado { background: #F5F5F5; color: #616161; border: 1px solid #E0E0E0; }
-
-    .ca-descricao {
-      font-size: 18px;
-      font-weight: 600;
-      color: #202124;
-      margin-bottom: 20px;
-      line-height: 1.4;
-    }
-
-    .info-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
       gap: 16px;
     }
-    @media (max-width: 480px) { .info-grid { grid-template-columns: 1fr; } }
+    .ca-card-top.valido   { border-top: 5px solid #2E7D32; }
+    .ca-card-top.vencido  { border-top: 5px solid #C62828; }
+    .ca-card-top.cancelado{ border-top: 5px solid #757575; }
 
-    .info-item label {
-      display: block;
-      font-size: 11px;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      color: #9aa0a6;
-      margin-bottom: 4px;
+    .ca-numero {
+      font-size: 26px; font-weight: 800; letter-spacing: -0.5px;
+      line-height: 1;
     }
-    .info-item span {
-      font-size: 14px;
-      color: #202124;
-      word-break: break-word;
+    .ca-numero.valido   { color: #2E7D32; }
+    .ca-numero.vencido  { color: #C62828; }
+    .ca-numero.cancelado{ color: #757575; }
+
+    .ca-tipo {
+      font-size: 13px; font-weight: 600;
+      text-transform: uppercase; letter-spacing: .6px;
+      color: #6b7280; margin-top: 5px;
     }
 
-    .aviso-vencido {
-      margin-top: 20px;
+    .status-badge {
+      flex-shrink: 0;
+      padding: 7px 18px;
+      border-radius: 20px;
+      font-size: 13px; font-weight: 700;
+      letter-spacing: .3px;
+    }
+    .status-badge.valido   { background: #E8F5E9; color: #2E7D32; border: 1.5px solid #A5D6A7; }
+    .status-badge.vencido  { background: #FFEBEE; color: #C62828; border: 1.5px solid #FFCDD2; }
+    .status-badge.cancelado{ background: #F5F5F5; color: #757575; border: 1.5px solid #E0E0E0; }
+
+    /* ── SEÇÃO: DESCRIÇÃO ── */
+    .ca-descricao-section {
+      padding: 18px 28px;
+      background: #f8f9fb;
+      border-bottom: 1px solid #f0f2f5;
+    }
+    .section-label {
+      font-size: 10px; font-weight: 700;
+      text-transform: uppercase; letter-spacing: .8px;
+      color: #9aa0ac; margin-bottom: 8px;
+    }
+    .ca-descricao-texto {
+      font-size: 14px; line-height: 1.7; color: #374151;
+    }
+
+    /* ── SEÇÃO: DADOS ── */
+    .ca-dados-section {
+      padding: 20px 28px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 20px;
+      border-bottom: 1px solid #f0f2f5;
+    }
+
+    .dado-item {}
+    .dado-label {
+      font-size: 10px; font-weight: 700;
+      text-transform: uppercase; letter-spacing: .8px;
+      color: #9aa0ac; margin-bottom: 4px;
+    }
+    .dado-valor {
+      font-size: 14px; color: #1a1a2e;
+      font-weight: 500; word-break: break-word;
+      line-height: 1.5;
+    }
+    .dado-valor.cnpj { font-family: 'Courier New', monospace; font-size: 13px; }
+
+    /* Destaque para validade */
+    .dado-valor.valida-loc {
+      color: #1565C0; font-style: italic; font-size: 13px;
+    }
+
+    /* ── ALERTA VENCIDO ── */
+    .alerta-vencido {
+      margin: 0 28px 20px;
       padding: 12px 16px;
       background: #FFEBEE;
       border-radius: 8px;
-      font-size: 13px;
-      color: #C62828;
+      border-left: 4px solid #C62828;
+      font-size: 13px; color: #C62828;
+      display: flex; align-items: flex-start; gap: 10px;
+    }
+
+    /* ── RODAPÉ DO CARD ── */
+    .ca-card-footer {
+      padding: 14px 28px;
+      background: #f8f9fb;
       display: flex;
       align-items: center;
-      gap: 8px;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
     }
+    .ca-fonte {
+      font-size: 11px; color: #9aa0ac;
+    }
+    .btn-laudo {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: #1565C0; color: #fff;
+      padding: 9px 18px; border-radius: 8px;
+      font-size: 13px; font-weight: 600;
+      text-decoration: none;
+      transition: background .2s;
+    }
+    .btn-laudo:hover { background: #0D47A1; }
 
-    .erro {
+    /* ── ERRO ── */
+    .card-erro {
       background: #fff;
-      border-radius: 12px;
-      padding: 28px;
-      box-shadow: 0 2px 8px rgba(32,33,36,.12);
+      border-radius: 14px;
+      padding: 40px;
       text-align: center;
+      box-shadow: 0 2px 12px rgba(0,0,0,.08);
     }
-    .erro .erro-icon { font-size: 40px; margin-bottom: 12px; }
-    .erro h3 { color: #202124; margin-bottom: 8px; }
-    .erro p  { color: #5f6368; font-size: 14px; }
+    .card-erro .icon { font-size: 44px; margin-bottom: 12px; }
+    .card-erro h3 { color: #1a1a2e; margin-bottom: 8px; font-size: 18px; }
+    .card-erro p  { color: #6b7280; font-size: 14px; line-height: 1.6; }
 
-    /* FOOTER */
+    /* ── FOOTER ── */
     footer {
       background: #fff;
       border-top: 1px solid #e8eaed;
-      padding: 16px 24px;
-      text-align: center;
+      padding: 14px 32px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
       font-size: 12px;
-      color: #9aa0a6;
+      color: #9aa0ac;
+      flex-wrap: wrap;
+      gap: 8px;
     }
     footer a { color: #1565C0; text-decoration: none; }
     footer a:hover { text-decoration: underline; }
-    .footer-links { display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 600px) {
+      .search-strip { padding: 14px 16px; }
+      main { padding: 16px; }
+      .ca-card-top { flex-direction: column; gap: 10px; }
+      .ca-dados-section { grid-template-columns: 1fr 1fr; }
+      footer { flex-direction: column; text-align: center; }
+    }
+    @media (max-width: 400px) {
+      .ca-dados-section { grid-template-columns: 1fr; }
+    }
   </style>
 </head>
 <body>
 
+<!-- HEADER -->
 <header>
+  <div class="logo-icon">U</div>
   <div>
     <div class="logo-text">Unomed</div>
     <div class="logo-sub">Medicina e Segurança do Trabalho</div>
   </div>
-  <span class="logo-badge">MTE 27545</span>
+  <nav>
+    <a href="/ca/status" target="_blank">Status da API</a>
+    <a href="https://www.gov.br/trabalho-e-emprego" target="_blank">MTE Gov.br</a>
+  </nav>
 </header>
 
-<main>
-  <div class="hero">
-    <h1>Consulta <span>CA</span></h1>
-    <p>Certificado de Aprovação de EPI — dados oficiais do Ministério do Trabalho</p>
-  </div>
-
-  <div class="search-box">
+<!-- BARRA DE BUSCA -->
+<div class="search-strip">
+  <div class="search-wrap">
     <input
       type="number"
       id="inputCa"
@@ -270,8 +304,8 @@
       min="1"
       autofocus
     />
-    <button onclick="consultar()" title="Consultar">
-      <svg width="22" height="22" viewBox="0 0 24 24">
+    <button class="btn-search" onclick="consultar()" title="Consultar">
+      <svg width="16" height="16" viewBox="0 0 24 24">
         <path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5
                  6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59
                  4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01
@@ -280,18 +314,27 @@
       </svg>
     </button>
   </div>
+  <span class="search-hint">Enter para pesquisar</span>
+</div>
 
-  <p class="search-hint">Pressione Enter para pesquisar</p>
-
-  <div id="resultado"></div>
+<!-- CONTEÚDO PRINCIPAL -->
+<main>
+  <div id="resultado">
+    <div class="empty-state">
+      <div class="icon">🛡️</div>
+      <h2>Consulta de CA — Certificado de Aprovação</h2>
+      <p>
+        Digite o número do CA no campo acima para consultar os dados oficiais do<br>
+        Ministério do Trabalho e Emprego. Base atualizada diariamente às 20h15.
+      </p>
+    </div>
+  </div>
 </main>
 
+<!-- FOOTER -->
 <footer>
-  <div class="footer-links">
-    <span>Stepenovski Clínica Médica Ltda — CNPJ 11.779.877/0001-09</span>
-    <a href="/ca/status" target="_blank">Status da API</a>
-    <a href="https://www.gov.br/trabalho-e-emprego" target="_blank">MTE Gov.br</a>
-  </div>
+  <span>Stepenovski Clínica Médica Ltda — CNPJ 11.779.877/0001-09</span>
+  <span>Dados oficiais: <a href="https://www.gov.br/trabalho-e-emprego" target="_blank">MTE Gov.br</a></span>
 </footer>
 
 <script>
@@ -304,81 +347,151 @@
 
   async function consultar() {
     const numero = input.value.trim();
-    if (!numero) {
-      input.focus();
-      return;
-    }
+    if (!numero) { input.focus(); return; }
 
-    resultado.innerHTML = '<div class="loading">Consultando base do MTE</div>';
+    resultado.innerHTML = `
+      <div class="loading">
+        <div class="spinner"></div>
+        Consultando base do Ministério do Trabalho...
+      </div>`;
 
     try {
       const res = await fetch('/ca/' + numero);
 
       if (res.status === 404) {
         resultado.innerHTML = `
-          <div class="erro">
-            <div class="erro-icon">🔍</div>
+          <div class="card-erro">
+            <div class="icon">🔍</div>
             <h3>CA ${numero} não encontrado</h3>
-            <p>Verifique o número digitado.<br>
-               Se o CA for recente, aguarde a atualização diária das 20h15.</p>
+            <p>
+              Verifique se o número está correto.<br>
+              Se o CA for recente, aguarde a atualização diária (todo dia às 20h15).<br><br>
+              <a href="https://consultaca.mte.gov.br/consultaca/${numero}" target="_blank">
+                Consultar diretamente no Gov.br →
+              </a>
+            </p>
           </div>`;
         return;
       }
 
-      if (!res.ok) {
-        throw new Error('Erro na consulta: ' + res.status);
-      }
+      if (!res.ok) throw new Error('Erro HTTP ' + res.status);
 
       const ca = await res.json();
-      renderResultado(ca);
+      renderCard(ca);
 
     } catch (e) {
       resultado.innerHTML = `
-        <div class="erro">
-          <div class="erro-icon">⚠️</div>
+        <div class="card-erro">
+          <div class="icon">⚠️</div>
           <h3>Erro ao consultar</h3>
           <p>${e.message}</p>
         </div>`;
     }
   }
 
-  function renderResultado(ca) {
+  function renderCard(ca) {
     const st = (ca.status || '').toUpperCase();
-    const classe = st === 'VÁLIDO' ? 'valido' : st === 'VENCIDO' ? 'vencido' : 'cancelado';
-    const badgeLabel = st || 'SEM STATUS';
+    const cls = st === 'VÁLIDO' ? 'valido'
+               : st === 'VENCIDO' ? 'vencido'
+               : 'cancelado';
 
-    const avisoVencido = (st === 'VENCIDO')
-      ? `<div class="aviso-vencido">
-           ⚠️ Este CA está vencido e o EPI <strong>não pode ser comercializado ou utilizado</strong>.
-         </div>` : '';
+    const alertaVencido = (st === 'VENCIDO') ? `
+      <div class="alerta-vencido">
+        <span>⚠️</span>
+        <div>
+          <strong>CA Vencido.</strong> Este EPI não pode ser comercializado nem utilizado como EPC/EPI
+          conforme NR-06. Verifique a renovação com o fabricante.
+        </div>
+      </div>` : '';
+
+    const alertaCancelado = (st === 'CANCELADO') ? `
+      <div class="alerta-vencido">
+        <span>🚫</span>
+        <div>
+          <strong>CA Cancelado.</strong> Este certificado foi cancelado pelo MTE.
+          O EPI não possui mais aprovação vigente.
+        </div>
+      </div>` : '';
 
     resultado.innerHTML = `
-      <div class="card ${classe}">
-        <div class="card-header">
-          <div class="ca-numero ${classe}">CA ${ca.numeroCa}</div>
-          <span class="badge ${classe}">${badgeLabel}</span>
+      <div class="ca-card">
+
+        <!-- TOPO: número + status -->
+        <div class="ca-card-top ${cls}">
+          <div>
+            <div class="ca-numero ${cls}">CA ${ca.numeroCa}</div>
+            ${ca.tipoEpi ? `<div class="ca-tipo">${ca.tipoEpi}</div>` : ''}
+          </div>
+          <span class="status-badge ${cls}">${ca.status || 'SEM STATUS'}</span>
         </div>
 
-        ${ca.descricao ? `<div class="ca-descricao">${ca.descricao}</div>` : ''}
+        <!-- DESCRIÇÃO TÉCNICA -->
+        ${ca.descricao ? `
+        <div class="ca-descricao-section">
+          <div class="section-label">Descrição técnica do produto</div>
+          <div class="ca-descricao-texto">${ca.descricao}</div>
+        </div>` : ''}
 
-        <div class="info-grid">
-          ${ca.tipoEpi      ? `<div class="info-item"><label>Tipo de EPI</label><span>${ca.tipoEpi}</span></div>` : ''}
-          ${ca.dataValidade ? `<div class="info-item"><label>Validade</label><span>${ca.dataValidade}</span></div>` : ''}
-          ${ca.fabricante   ? `<div class="info-item"><label>Fabricante</label><span>${ca.fabricante}</span></div>` : ''}
-          ${ca.cnpj         ? `<div class="info-item"><label>CNPJ</label><span>${formatCnpj(ca.cnpj)}</span></div>` : ''}
-          ${ca.nrAprovacao  ? `<div class="info-item"><label>Abrangência</label><span>${ca.nrAprovacao}</span></div>` : ''}
-          ${ca.restricoes   ? `<div class="info-item"><label>Restrições</label><span>${ca.restricoes}</span></div>` : ''}
+        <!-- DADOS EM GRID -->
+        <div class="ca-dados-section">
+
+          ${ca.fabricante ? `
+          <div class="dado-item" style="grid-column: 1 / -1;">
+            <div class="dado-label">Fabricante / Empresa</div>
+            <div class="dado-valor">${ca.fabricante}</div>
+          </div>` : ''}
+
+          ${ca.cnpj ? `
+          <div class="dado-item">
+            <div class="dado-label">CNPJ</div>
+            <div class="dado-valor cnpj">${formatCnpj(ca.cnpj)}</div>
+          </div>` : ''}
+
+          ${ca.nrAprovacao ? `
+          <div class="dado-item">
+            <div class="dado-label">Abrangência</div>
+            <div class="dado-valor">${ca.nrAprovacao}</div>
+          </div>` : ''}
+
+          ${ca.dataValidade ? `
+          <div class="dado-item">
+            <div class="dado-label">Local da data de validade no produto</div>
+            <div class="dado-valor valida-loc">${ca.dataValidade}</div>
+          </div>` : ''}
+
+          ${ca.restricoes ? `
+          <div class="dado-item">
+            <div class="dado-label">Modelo / Restrições</div>
+            <div class="dado-valor">${ca.restricoes}</div>
+          </div>` : ''}
+
         </div>
 
-        ${avisoVencido}
+        <!-- ALERTAS -->
+        ${alertaVencido}
+        ${alertaCancelado}
+
+        <!-- RODAPÉ DO CARD -->
+        <div class="ca-card-footer">
+          <span class="ca-fonte">
+            Fonte: Ministério do Trabalho e Emprego — Base CAEPI
+          </span>
+          <a
+            class="btn-laudo"
+            href="https://consultaca.mte.gov.br/consultaca/${ca.numeroCa}"
+            target="_blank"
+          >
+            Ver laudo completo no Gov.br ↗
+          </a>
+        </div>
+
       </div>`;
   }
 
   function formatCnpj(cnpj) {
     const d = cnpj.replace(/\D/g, '');
-    if (d.length === 14) {
+    if (d.length === 14)
       return d.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/, '$1.$2.$3/$4-$5');
-    }
     return cnpj;
   }
 </script>
