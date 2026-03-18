@@ -351,8 +351,8 @@
             <p>
               Verifique se o número está correto.<br>
               Se o CA for recente, aguarde a atualização diária (todo dia às 20h15).<br><br>
-              <a href="https://consultaca.mte.gov.br/consultaca/${numero}" target="_blank">
-                Consultar diretamente no Gov.br →
+              <a href="https://consultaca.com/${numero}" target="_blank">
+                Consultar no consultaca.com →
               </a>
             </p>
           </div>`;
@@ -422,7 +422,7 @@
 
           ${ca.fabricante ? `
           <div class="dado-item" style="grid-column: 1 / -1;">
-            <div class="dado-label">Fabricante / Empresa</div>
+            <div class="dado-label">Fabricante / Razão Social</div>
             <div class="dado-valor">${ca.fabricante}</div>
           </div>` : ''}
 
@@ -432,22 +432,34 @@
             <div class="dado-valor cnpj">${formatCnpj(ca.cnpj)}</div>
           </div>` : ''}
 
-          ${ca.nrAprovacao ? `
+          ${ca.abrangencia ? `
           <div class="dado-item">
-            <div class="dado-label">Abrangência</div>
-            <div class="dado-valor">${ca.nrAprovacao}</div>
+            <div class="dado-label">Natureza</div>
+            <div class="dado-valor">${ca.abrangencia}</div>
+          </div>` : ''}
+
+          ${ca.nup ? `
+          <div class="dado-item">
+            <div class="dado-label">N° Processo (NUP)</div>
+            <div class="dado-valor" style="font-family:monospace;font-size:12px;">${ca.nup}</div>
           </div>` : ''}
 
           ${ca.dataValidade ? `
           <div class="dado-item">
-            <div class="dado-label">Local da data de validade no produto</div>
-            <div class="dado-valor valida-loc">${ca.dataValidade}</div>
+            <div class="dado-label">Validade do CA</div>
+            <div class="dado-valor" style="font-weight:700;color:${cls==='vencido'?'#C62828':cls==='cancelado'?'#757575':'#2E7D32'};">${formatData(ca.dataValidade)}</div>
           </div>` : ''}
 
-          ${ca.restricoes ? `
+          ${ca.marcacao ? `
           <div class="dado-item">
-            <div class="dado-label">Modelo / Restrições</div>
-            <div class="dado-valor">${ca.restricoes}</div>
+            <div class="dado-label">Marcação no produto</div>
+            <div class="dado-valor valida-loc">${ca.marcacao}</div>
+          </div>` : ''}
+
+          ${ca.referencias ? `
+          <div class="dado-item">
+            <div class="dado-label">Referências / Modelo</div>
+            <div class="dado-valor">${ca.referencias}</div>
           </div>` : ''}
 
         </div>
@@ -463,10 +475,10 @@
           </span>
           <a
             class="btn-laudo"
-            href="https://consultaca.mte.gov.br/consultaca/${ca.numeroCa}"
+            href="https://consultaca.com/${ca.numeroCa}"
             target="_blank"
           >
-            Ver laudo completo no Gov.br ↗
+            Ver laudo completo ↗
           </a>
         </div>
 
@@ -478,6 +490,14 @@
     if (d.length === 14)
       return d.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/, '$1.$2.$3/$4-$5');
     return cnpj;
+  }
+
+  function formatData(data) {
+    if (!data) return '';
+    // Converte YYYY-MM-DD → DD/MM/YYYY se necessário
+    const iso = data.match(/^(\d{4})-(\d{2})-(\d{2})/);
+    if (iso) return `${iso[3]}/${iso[2]}/${iso[1]}`;
+    return data;
   }
 </script>
 

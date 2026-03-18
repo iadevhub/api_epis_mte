@@ -160,30 +160,33 @@ public class CaService {
     }
 
     // Parse de cada linha do arquivo TXT (separado por |)
-    // Layout real do tgg_export_caepi.txt (verificado nos logs):
-    // [0] NR_CA  [1] DATA_PUBLICACAO  [2] SITUACAO  [3] NUP
-    // [4] CNPJ   [5] RAZAO_SOCIAL     [6] ABRANGENCIA  [7] TIPO_EPI
-    // [8] DESCRICAO_PRODUTO  [9] DATA_VALIDADE  [10] RESTRICOES
+    // Layout real do tgg_export_caepi.txt:
+    // [0] NR_CA  [1] DATA_VALIDADE    [2] SITUACAO       [3] NUP
+    // [4] CNPJ   [5] RAZAO_SOCIAL     [6] ABRANGENCIA    [7] TIPO_EPI
+    // [8] DESCRICAO_PRODUTO           [9] MARCACAO        [10] REFERENCIAS
     private CaDTO parsearLinha(String linha) {
         try {
             String[] c = linha.split("\\|", -1);
 
             if (c.length < 6) return null;
 
-            String numeroCa     = limpar(c[0]);
-            String status       = limpar(c[2]); // VÁLIDO / VENCIDO / CANCELADO
-            String cnpj         = limpar(c[4]);
-            String fabricante   = limpar(c[5]);
-            String nrAprovacao  = limpar(c.length > 6  ? c[6]  : "");
-            String tipoEpi      = limpar(c.length > 7  ? c[7]  : "");
-            String descricao    = limpar(c.length > 8  ? c[8]  : "");
-            String dataValidade = limpar(c.length > 9  ? c[9]  : "");
-            String restricoes   = limpar(c.length > 10 ? c[10] : "");
+            String numeroCa       = limpar(c[0]);
+            String dataValidade   = limpar(c.length > 1  ? c[1]  : ""); // data de validade
+            String status         = limpar(c[2]); // VÁLIDO / VENCIDO / CANCELADO
+            String nup            = limpar(c.length > 3  ? c[3]  : ""); // N° Processo
+            String cnpj           = limpar(c[4]);
+            String fabricante     = limpar(c[5]);
+            String abrangencia    = limpar(c.length > 6  ? c[6]  : ""); // Nacional / Estadual
+            String tipoEpi        = limpar(c.length > 7  ? c[7]  : "");
+            String descricao      = limpar(c.length > 8  ? c[8]  : "");
+            String marcacao       = limpar(c.length > 9  ? c[9]  : ""); // onde o CA é impresso
+            String referencias    = limpar(c.length > 10 ? c[10] : ""); // modelo/referências
 
             if (numeroCa.isBlank()) return null;
 
             return new CaDTO(numeroCa, descricao, fabricante, cnpj,
-                             dataValidade, status, tipoEpi, nrAprovacao, restricoes);
+                             dataValidade, status, nup,
+                             abrangencia, tipoEpi, marcacao, referencias);
 
         } catch (Exception e) {
             return null;
