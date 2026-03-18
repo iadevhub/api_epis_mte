@@ -280,7 +280,7 @@
 <!-- MAIN CENTRALIZADO -->
 <main>
   <div class="hero">
-    <h1>Consulta <span>CA</span></h1>
+    <h1 onclick="resetar()" title="Nova pesquisa" style="cursor:pointer;">Consulta <span>CA</span></h1>
     <p>Certificado de Aprovação de EPI — dados oficiais do Ministério do Trabalho</p>
   </div>
 
@@ -319,6 +319,12 @@
   input.addEventListener('keydown', e => {
     if (e.key === 'Enter') consultar();
   });
+
+  function resetar() {
+    input.value = '';
+    resultado.innerHTML = '';
+    input.focus();
+  }
 
   async function consultar() {
     const numero = input.value.trim();
